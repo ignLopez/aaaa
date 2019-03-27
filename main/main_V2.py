@@ -614,6 +614,7 @@ class ModoReport:
 
         self.button1 = Button(self.frameBottons, text='Resfrescar Report', width=15)
         self.fundaGraph = Figure(figsize=(10,5),dpi=100)
+        self.fundaGraph.tight_layout(pad=1, w_pad=1.0, h_pad=1.0)
         self.subploti1 = self.fundaGraph.add_subplot(221)
         self.subploti1.axis('equal')
         self.subploti2 = self.fundaGraph.add_subplot(222)
@@ -674,7 +675,8 @@ class ModoReport:
         tablita=pd.DataFrame(tablita.to_records())
         self.subploti2.plot(tablita['index'].sort_values(),tablita['eur'])
         self.subploti2.set_xticklabels(tablita['index'].sort_values(),rotation=60)
-        print(tablita['index'].sort_values(by=tablita.index),tablita['eur'])
+        self.subploti2.tick_params()
+        print(tablita['index'].sort_values(),tablita['eur'])
 
 if __name__ == '__main__':
     window = Tk()
