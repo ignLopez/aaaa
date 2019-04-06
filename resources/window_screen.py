@@ -18,10 +18,11 @@ class MainWindow:
         self.db = base_paths.db_file
         self.window = window
         self.columnas = ('id', 'Fecha', 'Cuenta', 'Categoría', ' Subcategoría ', 'Descripción', '€', 'TipoMov', 'Notas')
-        self.frameBottons = Frame(self.window, borderwidth=3, relief='groove', bg='blue')
-        self.frameTable = Frame(self.window, borderwidth=3, relief='ridge', bg='blue')
+        self.frameBottons = Frame(self.window, borderwidth=3, relief='groove', bg='#4863a0')
+        self.frameTable = Frame(self.window, borderwidth=3, relief='ridge', bg='white')
         self.titulo = Label(self.frameBottons, text='Insertar un Movimiento').pack()
-        self.titulo2 = Label(self.frameTable, text='Últimos Movimiento').pack(expand=1)
+        # self.titulo2 = Label(self.frameTable, text='Últimos Movimiento').pack(expand=1)
+        self.font = ("Helvetica", 10, 'bold')
 
         #      self.tree = ttk.Treeview(self.frameTable)
         #        self.tree['columns'] = self.columnas
@@ -30,11 +31,21 @@ class MainWindow:
         #            self.tree.heading(i, text=i, anchor=CENTER)
         #            self.tree.column(i, minwidth=0, width=90, stretch=NO)
 
-        self.botonReport = Button(self.frameBottons, text='Mostrat Informe', command=self.create_report, width=15)
-        self.button1 = Button(self.frameBottons, text='Gasto', command=lambda: self.getInsert('Gasto'), width=15)
-        self.button2 = Button(self.frameBottons, text='Ingreso', command=lambda: self.getInsert('Ingreso'), width=15)
-        self.button3 = Button(self.frameBottons, text='Traspaso', command=lambda: self.getInsert('Traspaso'), width=15)
-        self.button4 = Button(self.frameBottons, text='Importar Movimientos', command=self.importarMov, width=15)
+        self.botonReport = Button(self.frameBottons, text='Mostrar Informe', command=self.create_report, width=15,
+                                  bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',
+                                  font=self.font)
+        self.button1 = Button(self.frameBottons, text='Gasto', command=lambda: self.getInsert('Gasto'), width=15,
+                              bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',
+                              font=self.font)
+        self.button2 = Button(self.frameBottons, text='Ingreso', command=lambda: self.getInsert('Ingreso'), width=15,
+                              bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',
+                              font=self.font)
+        self.button3 = Button(self.frameBottons, text='Traspaso', command=lambda: self.getInsert('Traspaso'), width=15,
+                              bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',
+                              font=self.font)
+        self.button4 = Button(self.frameBottons, text='Importar', command=self.importarMov, width=15,
+                              bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',
+                              font=self.font)
         self.fundaGraph = Figure(figsize=(10, 5), dpi=100)
         self.subploti = self.fundaGraph.add_subplot(111)
         self.subploti.set_title('Histórico')

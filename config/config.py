@@ -66,7 +66,7 @@ class SqlSentence:
                 categoria text,
                 subcategoria text,
                 descripcion text,
-                eur text,
+                total text,
                 tipomov text,
                 notas text,
                 insertupdate text
