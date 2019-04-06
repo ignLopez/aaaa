@@ -1,7 +1,7 @@
 from tkinter import LabelFrame, Label, ttk, Entry, CENTER, NO, StringVar, Toplevel, DoubleVar, W, E, Button
 import sqlite3
 
-from config.config import yet, yet2
+from config.config import yet, yet2, SqlSentence as sqls
 from resources import base_paths
 
 class ModoInsert:
@@ -98,8 +98,8 @@ class ModoInsert:
         registrosAntiguos = self.tree.get_children()
         for registro in registrosAntiguos:
             self.tree.delete(registro)
-        query = 'SELECT id , Fecha , Cuenta , Categoria , Subcategoria,Descripcion,Total,TipoMov,Notas FROM pruebas ' \
-                'Where TipoMov="' + tipo + '" order by insertupdate desc'
+        query = sqls.select_pruebas.format(tipo)
+        print(query)
         movimientos = self.run_query(query)
         for movimiento in movimientos:
             self.tree.insert('', 0, text=movimiento[0], values=movimiento[0:])

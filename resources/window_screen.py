@@ -8,6 +8,10 @@ from resources.modo_insert import ModoInsert
 from resources.lectura_inteligente import LecturaInteligente
 from resources.modo_report import ModoReport
 from resources import base_paths
+from config.config import SqlSentence as sqls
+
+import seaborn as sns
+sns.set()
 
 class MainWindow:
     def __init__(self, window):
@@ -16,7 +20,6 @@ class MainWindow:
         self.columnas = ('id', 'Fecha', 'Cuenta', 'Categoría', ' Subcategoría ', 'Descripción', '€', 'TipoMov', 'Notas')
         self.frameBottons = Frame(self.window, borderwidth=3, relief='groove', bg='blue')
         self.frameTable = Frame(self.window, borderwidth=3, relief='ridge', bg='blue')
-
         self.titulo = Label(self.frameBottons, text='Insertar un Movimiento').pack()
         self.titulo2 = Label(self.frameTable, text='Últimos Movimiento').pack(expand=1)
 
@@ -36,7 +39,6 @@ class MainWindow:
         self.subploti = self.fundaGraph.add_subplot(111)
         self.subploti.set_title('Histórico')
         self.canvas = FigureCanvasTkAgg(self.fundaGraph, self.frameTable)
-        self.canvas.show()
         self.canvas.get_tk_widget().pack(side='bottom', expand=True, fill='both', pady=5)
 
         self.botonReport.pack(side='bottom', expand=True, fill='both')
@@ -75,25 +77,28 @@ class MainWindow:
             else:
                 return float(x.replace(',', '.'))
 
-        query = "SELECT * FROM facts_table"
-        db = 'C://Users//Ignacio//Desktop//baseDatos//HOST_CON.db'
-        cnx = sqlite3.connect(db)
+        cnx = sqlite3.connect(self.db)
+        cnx_cursor = cnx.cursor()
+        cnx_cursor.execute(sqls.create_fact_table)
+        cnx_cursor.execute(sqls.create_prueba_table)
+        query = sqls.select_fact
         data = pd.read_sql_query(query, cnx)
-        data['fecha'] = pd.to_datetime(data['fecha'], format="%d/%m/%Y")
-        data['mes'] = data['fecha'].apply(lambda x: x.month)
-        data['anio'] = data['fecha'].apply(lambda x: x.year)
-        data['eur'] = data['eur'].apply(lambda x: limpiar_eur(x))
-        data.loc[data.tipo == 'Gasto', 'eur2'] = data['eur'] * -1
-        data.loc[data.tipo != 'Gasto', 'eur2'] = data['eur']
-        tablita = data[data['tipo'] != 'Traspaso'].pivot_table('eur2', index=['anio', 'mes'], columns='tipo',
-                                                               aggfunc='sum')
-        tablita.index = [pd.datetime(anio, mes, 1).date().strftime('%m/%y') for (anio, mes) in tablita.index]
-        df2 = pd.DataFrame(tablita.to_records())
-        df2['ahorro_mensual'] = df2['Gasto'] + df2['Ingreso']
-        df2['k'] = df2['ahorro_mensual'].cumsum()
-        df2['index'] = pd.to_datetime(df2['index'], format="%m/%y")
-        df2.index = [pd.to_datetime(i).date().strftime('%m/%y') for i in df2['index']]
-        df2[['Gasto', 'Ingreso']].plot.bar(color=['red', 'green'])
-        self.subploti.plot(df2['index'], df2['Gasto'] * -1)
-        self.subploti.plot(df2['index'], df2['Ingreso'])
-        self.subploti.plot(df2['index'], df2['k'])
+        if not data.empty:
+            data['fecha'] = pd.to_datetime(data['fecha'], format="%d/%m/%Y")
+            data['mes'] = data['fecha'].apply(lambda x: x.month)
+            data['anio'] = data['fecha'].apply(lambda x: x.year)
+            data['eur'] = data['eur'].apply(lambda x: limpiar_eur(x))
+            data.loc[data.tipo == 'Gasto', 'eur2'] = data['eur'] * -1
+            data.loc[data.tipo != 'Gasto', 'eur2'] = data['eur']
+            tablita = data[data['tipo'] != 'Traspaso'].pivot_table('eur2', index=['anio', 'mes'], columns='tipo',
+                                                                   aggfunc='sum')
+            tablita.index = [pd.datetime(anio, mes, 1).date().strftime('%m/%y') for (anio, mes) in tablita.index]
+            df2 = pd.DataFrame(tablita.to_records())
+            df2['ahorro_mensual'] = df2['Gasto'] + df2['Ingreso']
+            df2['k'] = df2['ahorro_mensual'].cumsum()
+            df2['index'] = pd.to_datetime(df2['index'], format="%m/%y")
+            df2.index = [pd.to_datetime(i).date().strftime('%m/%y') for i in df2['index']]
+            df2[['Gasto', 'Ingreso']].plot.bar(color=['red', 'green'])
+            self.subploti.plot(df2['index'], df2['Gasto'] * -1)
+            self.subploti.plot(df2['index'], df2['Ingreso'])
+            self.subploti.plot(df2['index'], df2['k'])

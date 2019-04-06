@@ -42,3 +42,38 @@ params = {
 
 yet = str(datetime.datetime.now().date().strftime('%d/%m/%Y'))
 yet2 = datetime.datetime.now().date().strftime('%d/%m/%Y , %H:%M:%S')
+
+
+class SqlSentence:
+    create_fact_table = """
+        CREATE TABLE IF NOT EXISTS facts_table (
+                id integer PRIMARY KEY,
+                fecha text,
+                cuenta text,
+                categoria text,
+                subcategoria text,
+                descripcion text,
+                eur text,
+                tipo text,
+                nota text
+                );"""
+
+    create_prueba_table = """
+        CREATE TABLE IF NOT EXISTS pruebas (
+                id integer PRIMARY KEY,
+                fecha text,
+                cuenta text,
+                categoria text,
+                subcategoria text,
+                descripcion text,
+                eur text,
+                tipomov text,
+                notas text,
+                insertupdate text
+                );
+        """
+    select_fact = """SELECT * FROM facts_table"""
+    select_pruebas = """
+    SELECT id , fecha , cuenta , categoria , subcategoria, descripcion, total, tipomov, notas FROM pruebas 
+    WHERE tipomov='{0}' ORDER BY insertupdate DESC
+    """
