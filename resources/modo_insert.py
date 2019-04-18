@@ -6,6 +6,7 @@ from resources import base_paths
 
 class ModoInsert:
 
+    # Principal modo insert view
     def __init__(self, newWindow, tipo, window):
         self.db = base_paths.db_file
         self.tipo = tipo
@@ -83,8 +84,8 @@ class ModoInsert:
         self.getCategoria(tipo)
         self.insertarMovimiento(tipo)
 
-    # Métodos
 
+    # Get sqlitle connection
     def run_query(self, query, parameters=()):
         with sqlite3.connect(self.db) as conn:
             cursor = conn.cursor()
@@ -92,6 +93,7 @@ class ModoInsert:
             conn.commit()
             return result
 
+    # get sql query
     def getMovimiento(self, tipo):
         # Limpia la tabla
         tipo = str(tipo)
@@ -114,6 +116,7 @@ class ModoInsert:
         for movimiento in movimientos:
             self.tree.insert('', 0, text=movimiento[0], values=movimiento[1:])
 
+    # show list of cuenta order by historic frequency
     def getCuenta(self):
         query = """SELECT cuenta FROM
                   (SELECT  cuenta ,count(cuenta) as  freq
@@ -124,18 +127,19 @@ class ModoInsert:
         lista = [elemento[0] for elemento in elemntos]
         self.cuenta["values"] = lista
 
+    # show list of category order by historic frequency
     def getCategoria(self, tipo):
         query = 'SELECT distinct categoria from facts_table Where tipo="' + tipo + '"'
         elemntos = self.run_query(query)
         lista = [elemento[0] for elemento in elemntos]
         self.categoria["values"] = lista
-
+    # form validation
     def validacion(self):
         "result =  len(self.fecha.get())!=0 and \
                   len(self.eur.get())!=0ç2"""
         # ('.' in self.eur.get())
         return True
-
+    # insert data form in sqllitle
     def insertarMovimiento(self, tipo):
         if self.validacion():
             query = "INSERT INTO pruebas VALUES(NULL,?,?,?,?,?,?,?,?,?)"
@@ -166,7 +170,7 @@ class ModoInsert:
         lista = [elemento[0] for elemento in elemntos]
         self.cuenta["values"] = lista
 
-    # Método Borrar
+    # delete form registry
     def g_borrar(self, tipo):
         self.message['text'] = ''  # Vaciamos el texto del mensaje
         try:
@@ -182,7 +186,7 @@ class ModoInsert:
         self.message['text'] = 'yiaaass!!! La armaste'
         self.getMovimiento(tipo)
 
-    # Método  Módulo Editar
+    # create edit window form registry
     def g_editar(self, tipo):
         self.message['text'] = ''  # Vaciamos el texto del mensaje
         try:
@@ -293,7 +297,7 @@ class ModoInsert:
                                                     newtipo.get(), newNota.get(), tipo)).grid(row=9, columns=2,
                                                                                               sticky=W + E)
 
-    # Método editar un registro
+    # edit form registry in window edit
     def editar_registro(self, id, newFecha, newCuenta, newCategoria, newSubCategoria, newdescripcion, newEur, newtipo,
                         newNota, tipo):
         query = 'UPDATE pruebas SET Fecha =?, Cuenta =?,Categoria =?,Subcategoria =?,Descripcion =?,Total =?,' \
@@ -304,7 +308,7 @@ class ModoInsert:
         self.message['text'] = 'El Registro nº{} se ha actualizado'.format(id)
         self.getMovimiento(tipo)
 
-    # Método Cerrar Ventana
+    # close window
     def close_windows(self):
         self.window1.destroy()
         self.window.deiconify()
