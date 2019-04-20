@@ -94,6 +94,7 @@ class MainWindow:
         cnx_cursor.execute(sqls.create_prueba_table)
         query = sqls.select_fact
         data = pd.read_sql_query(query, cnx)
+
         if not data.empty:
             data['fecha'] = pd.to_datetime(data['fecha'], format="%d/%m/%Y")
             data['mes'] = data['fecha'].apply(lambda x: x.month)
@@ -113,3 +114,4 @@ class MainWindow:
             self.subploti.plot(df2['index'], df2['Gasto'] * -1)
             self.subploti.plot(df2['index'], df2['Ingreso'])
             self.subploti.plot(df2['index'], df2['k'])
+

@@ -117,6 +117,7 @@ class ModoInsert:
             self.tree.insert('', 0, text=movimiento[0], values=movimiento[1:])
 
     # show list of cuenta order by historic frequency
+
     def getCuenta(self):
         query = """SELECT cuenta FROM
                   (SELECT  cuenta ,count(cuenta) as  freq
@@ -133,12 +134,14 @@ class ModoInsert:
         elemntos = self.run_query(query)
         lista = [elemento[0] for elemento in elemntos]
         self.categoria["values"] = lista
+
     # form validation
     def validacion(self):
         "result =  len(self.fecha.get())!=0 and \
                   len(self.eur.get())!=0ç2"""
         # ('.' in self.eur.get())
         return True
+
     # insert data form in sqllitle
     def insertarMovimiento(self, tipo):
         if self.validacion():
