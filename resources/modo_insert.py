@@ -8,17 +8,19 @@ class ModoInsert:
 
     # Principal modo insert view
     def __init__(self, newWindow, tipo, window):
+        self.font = ("Helvetica", 10, 'bold')
         self.db = base_paths.db_file
         self.tipo = tipo
         self.window1 = newWindow
         self.window = window
         self.columnas = ('id', 'Fecha', 'Cuenta', 'Categoría', ' Subcategoría ', 'Descripción', '€', 'TipoMov', 'Notas')
-        self.frameBottons = LabelFrame(self.window1, borderwidth=3, relief='groove', bg='blue')
-        self.frameTable = LabelFrame(self.window1, borderwidth=3, relief='ridge', bg='blue')
+        self.frameBottons = LabelFrame(self.window1, borderwidth=3, relief='groove', bg='#4863a0',fg='#fff')
+        self.frameTable = LabelFrame(self.window1, borderwidth=3, relief='ridge', bg='#4863a0')
         self.message = Label(self.window1, borderwidth=3, relief='ridge')
         self.message['text'] = ''
-        self.titulo = Label(self.frameBottons, text='Insertar un Movimiento').pack()
+        self.titulo = Label(self.frameBottons, text='Insertar un Movimiento',bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font).pack()
         # self.message = Label(self.frameTable,text='',fg='red').pack( expand=True, fill='both')
+
 
         self.tree = ttk.Treeview(self.frameTable)
         self.tree['columns'] = self.columnas
@@ -27,29 +29,28 @@ class ModoInsert:
             self.tree.heading(i, text=i, anchor=CENTER)
             self.tree.column(i, minwidth=0, width=90, stretch=NO)
 
-        self.fechaEtiqueta = Label(self.frameBottons, text='Fecha: ')
+        self.fechaEtiqueta = Label(self.frameBottons, text='Fecha: ',bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
         self.fecha = Entry(self.frameBottons, textvariable=StringVar(self.frameBottons, yet))
-        self.cuentaEtiqueta = Label(self.frameBottons, text='Cuenta: ')
+        self.cuentaEtiqueta = Label(self.frameBottons, text='Cuenta: ',bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
         self.cuenta = ttk.Combobox(self.frameBottons, state="readonly", width=17)
         self.cuenta["values"] = ''
-        self.categoriaEtiqueta = Label(self.frameBottons, text='Categoria: ')
+        self.categoriaEtiqueta = Label(self.frameBottons, text='Categoria: ',bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
         self.categoria = ttk.Combobox(self.frameBottons, state="readonly", width=17)
         self.categoria["values"] = ''
-        self.subcategoriaEtiqueta = Label(self.frameBottons, text='Subcategoria: ')
+        self.subcategoriaEtiqueta = Label(self.frameBottons, text='Subcategoria: ',bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
         self.subcategoria = Entry(self.frameBottons)
-        self.descripcionEtiqueta = Label(self.frameBottons, text='Descripcion: ')
+        self.descripcionEtiqueta = Label(self.frameBottons, text='Descripcion: ',bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
         self.descripcion = Entry(self.frameBottons)
-        self.eurEtiqueta = Label(self.frameBottons, text='€: ')
+        self.eurEtiqueta = Label(self.frameBottons, text='€: ',bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
         self.eur = Entry(self.frameBottons)
-        self.tipoEtiqueta = Label(self.frameBottons, text='tipo: ')
+        self.tipoEtiqueta = Label(self.frameBottons, text='tipo: ',bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
         self.tipo = Entry(self.frameBottons, textvariable=StringVar(self.frameBottons, tipo), state='readonly')
-        self.notaEtiqueta = Label(self.frameBottons, text='Nota: ')
+        self.notaEtiqueta = Label(self.frameBottons, text='Nota: ',bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
         self.nota = Entry(self.frameBottons)
-        self.botonInsertarMov = ttk.Button(self.frameBottons, text='Aceptar',
-                                           command=lambda: self.insertarMovimiento(tipo))
-        self.editar = ttk.Button(self.frameBottons, text='Editar', command=lambda: self.g_editar(tipo))
-        self.borrar = ttk.Button(self.frameBottons, text='Borrar', command=lambda: self.g_borrar(tipo))
-        self.quitButton = ttk.Button(self.frameBottons, text='Quit', width=25, command=self.close_windows)
+        self.botonInsertarMov = Button(self.frameBottons, text='Aceptar',command=lambda: self.insertarMovimiento(tipo), bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
+        self.editar = Button(self.frameBottons, text='Editar', command=lambda: self.g_editar(tipo), bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
+        self.borrar = Button(self.frameBottons, text='Borrar', command=lambda: self.g_borrar(tipo), bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
+        self.quitButton = Button(self.frameBottons, text='Quit', width=25, command=self.close_windows, bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',font=self.font)
 
         self.quitButton.pack(side='bottom', expand=True, fill='both', ipady=2)
         self.borrar.pack(side='bottom', expand=True, fill='both', ipady=2)
@@ -200,14 +201,14 @@ class ModoInsert:
             return
 
         id = self.tree.item(self.tree.selection())['text']
-        fecha = self.tree.item(self.tree.selection())['values'][0]
-        cuenta = self.tree.item(self.tree.selection())['values'][1]
-        categoria = self.tree.item(self.tree.selection())['values'][2]
-        subcategoria = self.tree.item(self.tree.selection())['values'][3]
-        descripcion = self.tree.item(self.tree.selection())['values'][4]
-        eur = self.tree.item(self.tree.selection())['values'][5]
-        tipo2 = self.tree.item(self.tree.selection())['values'][6]
-        nota = self.tree.item(self.tree.selection())['values'][7]
+        fecha = self.tree.item(self.tree.selection())['values'][1]
+        cuenta = self.tree.item(self.tree.selection())['values'][2]
+        categoria = self.tree.item(self.tree.selection())['values'][3]
+        subcategoria = self.tree.item(self.tree.selection())['values'][4]
+        descripcion = self.tree.item(self.tree.selection())['values'][5]
+        eur = self.tree.item(self.tree.selection())['values'][6]
+        tipo2 = self.tree.item(self.tree.selection())['values'][7]
+        nota = self.tree.item(self.tree.selection())['values'][8]
 
         self.edit_wind = Toplevel()
         self.edit_wind.title = "Editar movimiento"

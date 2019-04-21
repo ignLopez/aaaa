@@ -43,6 +43,7 @@ class ModoReport:
 
 class StartPage(Frame):
     def __init__(self, parent, controller):
+
         Frame.__init__(self, parent)
         query = "SELECT fecha,categoria,eur FROM facts_table WHERE tipo='Gasto'"
         query2 = "SELECT fecha,categoria,eur FROM facts_table WHERE tipo='Gasto' AND categoria='alquiler'"
