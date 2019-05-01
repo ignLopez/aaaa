@@ -24,7 +24,7 @@ params = {
                  },
 
             'Ingreso':
-                {'IngresoTrabajo': ['Abono de nómina']
+                {'salario W': ['Abono de nómina']
                  },
             'Traspaso':
                 {'bbva ahorro': ['Traspaso a cuenta'],

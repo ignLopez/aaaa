@@ -8,6 +8,7 @@ from resources.modo_insert import ModoInsert
 from resources.lectura_inteligente import LecturaInteligente
 from resources.modo_report import ModoReport
 from resources import base_paths
+from resources.modo_balance import ModoBalance
 from config.config import SqlSentence as sqls
 
 import seaborn as sns
@@ -46,12 +47,16 @@ class MainWindow:
         self.button4 = Button(self.frameBottons, text='Importar', command=self.importarMov, width=15,
                               bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',
                               font=self.font)
+        self.button_cuentas= Button(self.frameBottons, text='Cuentas', command=self.get_balance, width=15,
+                              bg='#4863a0', activebackground='#fff', activeforeground='#4863a0', fg='#fff',
+                              font=self.font)
         self.fundaGraph = Figure(figsize=(10, 5), dpi=100)
         self.subploti = self.fundaGraph.add_subplot(111)
         self.subploti.set_title('Histórico')
         self.canvas = FigureCanvasTkAgg(self.fundaGraph, self.frameTable)
         self.canvas.get_tk_widget().pack(side='bottom', expand=True, fill='both', pady=5)
 
+        self.button_cuentas.pack(side='bottom', expand=True, fill='both')
         self.botonReport.pack(side='bottom', expand=True, fill='both')
         self.button4.pack(side='bottom', expand=True, fill='both')
         self.button3.pack(side='bottom', expand=True, fill='both')
@@ -81,20 +86,17 @@ class MainWindow:
         self.window.withdraw()
 
     def get_data(self):
-
         def limpiar_eur(x):
             if type(x) == float:
                 return x
             else:
                 return float(x.replace(',', '.'))
-
         cnx = sqlite3.connect(self.db)
         cnx_cursor = cnx.cursor()
         cnx_cursor.execute(sqls.create_fact_table)
         cnx_cursor.execute(sqls.create_prueba_table)
         query = sqls.select_fact
         data = pd.read_sql_query(query, cnx)
-
         if not data.empty:
             data['fecha'] = pd.to_datetime(data['fecha'], format="%d/%m/%Y")
             data['mes'] = data['fecha'].apply(lambda x: x.month)
@@ -114,4 +116,9 @@ class MainWindow:
             self.subploti.plot(df2['index'], df2['Gasto'] * -1)
             self.subploti.plot(df2['index'], df2['Ingreso'])
             self.subploti.plot(df2['index'], df2['k'])
+
+    def get_balance(self):
+        self.newWindow = Toplevel(self.window)
+        self.app = ModoBalance(self.newWindow,self.window)
+        self.window.withdraw()
 

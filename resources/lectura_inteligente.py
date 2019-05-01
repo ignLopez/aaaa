@@ -114,25 +114,40 @@ class LecturaInteligente:
             if movimiento in dicti['cuenta'][i]:
                 return i
 
+    def leer_dict(self,concepto,movimiento):
+        for i in dicti['categoria'].keys():
+            for j in dicti['categoria'][i].keys():
+                for t in dicti['categoria'][i][j]:
+                    # si concepto está en la rama de las categorías
+                    if  concepto.upper().rstrip().lstrip()==t.upper().rstrip().lstrip():
+                        if i in ['Ingreso','Gasto','Traspaso']:
+                            return 'bbva',j,i
+                        elif i in ['Traspaso2']:
+                            for i in dicti['Movimiento'].keys():
+                                for a in dicti['Movimiento'][i].keys():
+                                    for z in dicti['Movimiento'][i][a]:
+                                        if (movimiento.upper().rstrip().lstrip()== z.upper().rstrip().lstrip()) or (z in movimiento.split()):
+                                            return a,'bbva','Traspaso'
+
+                        elif i in ['Traspaso3']:
+                            for i in dicti['Movimiento'].keys():
+                                for a in dicti['Movimiento'][i].keys():
+                                    for z in dicti['Movimiento'][i][a]:
+                                        if (movimiento.upper().rstrip().lstrip()== z.upper().rstrip().lstrip()) or (z in movimiento.split()):
+                                            return 'bbva',a,'Traspaso'
+
+
+
+
     def impReadData(self, ruta):
         mov = pd.read_excel(ruta, encoding='latin1').iloc[:, 1:]
         for index, row in mov.iterrows():
-            tipo, categoria = self.getCategoria(row['Concepto'])
-            cuenta = self.getCuenta(row['Movimiento'])
-            if tipo == 'traspaso':
-                if categoria != 'bbva':
-
-                    self.tree2.insert('', 0, values=(
-                        index, row['F.Valor'], 'bbva', categoria, '', row['Concepto'], abs(row['Importe']), tipo,
-                        row['Movimiento']))
-                else:
-                    self.tree2.insert('', 0, values=(
-                        index, row['F.Valor'], cuenta, categoria, '', row['Concepto'], abs(row['Importe']), tipo,
-                        row['Movimiento']))
+            if self.leer_dict(row['Concepto'],row['Movimiento'])!=None:
+                cuenta,categoria,tipo  = self.leer_dict(row['Concepto'],row['Movimiento'])
+                self.tree2.insert('', 0, values=(index, row['F.Valor'], cuenta, categoria, row['Concepto'], abs(row['Importe']), tipo,row['Movimiento']))
             else:
-                self.tree2.insert('', 0, values=(
-                    index, row['F.Valor'], 'bbva', categoria, '', row['Concepto'], abs(row['Importe']), tipo,
-                    row['Movimiento']))
+                self.tree2.insert('', 0, values=(index, row['F.Valor'], '888', '888', row['Concepto'], abs(row['Importe']),'888',row['Movimiento']))
+
         del mov
 
     def deleteRow(self):
