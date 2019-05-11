@@ -65,7 +65,6 @@ class ModoBalance:
         data=self.run_query(query1)
         data_prep=self.prepare_data(data)
         for index,row in lista_tipo.iterrows():
-
             abuelo=self.tree.insert('','end',values=(row['descript'],))
             for index,row in lista_cuentas[lista_cuentas['tipo_cuenta']==row['descript']].iterrows():
                 resta= data_prep[ ( (data_prep['cuenta']==row['descrip']) & (data_prep['tipo']=='Traspaso') ) | ( (data_prep['cuenta']==row['descrip']) & (data_prep['tipo']== 'Gasto'))]['eur'].sum()

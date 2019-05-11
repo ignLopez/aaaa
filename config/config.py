@@ -1,4 +1,7 @@
 import datetime
+import sqlite3
+import pandas as pd
+from resources import base_paths
 
 params = {
 
@@ -77,3 +80,23 @@ class SqlSentence:
     SELECT id , fecha , cuenta , categoria , subcategoria, descripcion, total, tipomov, notas FROM pruebas 
     WHERE tipomov='{0}' ORDER BY insertupdate DESC
     """
+
+class Services:
+
+    def run_query(self):
+        db=base_paths.db_file
+        cnx = sqlite3.connect(db)
+        return cnx
+
+
+    def get_query(self,query):
+        cnx=self.run_query()
+        data = pd.read_sql_query(query, cnx)
+        return data
+
+    def run_query2(self, query, parameters=()):
+        with sqlite3.connect(self.db) as conn:
+            cursor = conn.cursor()
+            result = cursor.execute(query, parameters)
+            conn.commit()
+            return result

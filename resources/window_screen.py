@@ -10,6 +10,7 @@ from resources.modo_report import ModoReport
 from resources import base_paths
 from resources.modo_balance import ModoBalance
 from config.config import SqlSentence as sqls
+from config.config import Services
 
 import seaborn as sns
 sns.set()
@@ -67,8 +68,7 @@ class MainWindow:
 
         self.frameBottons.grid(column=0, row=0, sticky="nsew")
         self.frameTable.grid(column=1, row=0, sticky="nsew")
-
-        self.get_data()
+        self.draw_plot()
 
     def getInsert(self, tipo):
         self.newWindow = Toplevel(self.window)
@@ -85,18 +85,15 @@ class MainWindow:
         self.app = ModoReport(self.newWindow, self.window)
         self.window.withdraw()
 
-    def get_data(self):
+    def draw_plot(self):
         def limpiar_eur(x):
             if type(x) == float:
                 return x
             else:
                 return float(x.replace(',', '.'))
-        cnx = sqlite3.connect(self.db)
-        cnx_cursor = cnx.cursor()
-        cnx_cursor.execute(sqls.create_fact_table)
-        cnx_cursor.execute(sqls.create_prueba_table)
         query = sqls.select_fact
-        data = pd.read_sql_query(query, cnx)
+        ss= Services()
+        data = ss.get_query(query)
         if not data.empty:
             data['fecha'] = pd.to_datetime(data['fecha'], format="%d/%m/%Y")
             data['mes'] = data['fecha'].apply(lambda x: x.month)

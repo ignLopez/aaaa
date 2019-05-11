@@ -102,20 +102,9 @@ class ModoInsert:
         for registro in registrosAntiguos:
             self.tree.delete(registro)
         query = sqls.select_pruebas.format(tipo)
-        print(query)
         movimientos = self.run_query(query)
         for movimiento in movimientos:
             self.tree.insert('', 0, text=movimiento[0], values=movimiento[0:])
-
-    def getMovimiento2(self):
-        # Limpia la tabla
-        registrosAntiguos = self.tree.get_children()
-        for registro in registrosAntiguos:
-            self.tree.delete(registro)
-        query = 'SELECT * FROM pruebas'
-        movimientos = self.run_query(query)
-        for movimiento in movimientos:
-            self.tree.insert('', 0, text=movimiento[0], values=movimiento[1:])
 
     # show list of cuenta order by historic frequency
 
@@ -139,7 +128,7 @@ class ModoInsert:
     # form validation
     def validacion(self):
         "result =  len(self.fecha.get())!=0 and \
-                  len(self.eur.get())!=0ç2"""
+                  len(self.eur.get())!=0"""
         # ('.' in self.eur.get())
         return True
 
@@ -178,7 +167,7 @@ class ModoInsert:
     def g_borrar(self, tipo):
         self.message['text'] = ''  # Vaciamos el texto del mensaje
         try:
-            self.tree.item(self.tree.selection())['text']
+            self.tree.item(self.tree.selection())['values'][0]
 
         except IndexError:
             self.message['text'] = 'Selecciona un movimiento simpló!!'
