@@ -1,7 +1,7 @@
 from tkinter import LabelFrame, Label, ttk, Entry, CENTER, NO, StringVar, Toplevel, DoubleVar, W, E, Button
 import sqlite3
 
-from config.config import yet, yet2, SqlSentence as sqls
+from config.config import yet, yet2, SqlSentence as sqls, Services,Validador
 from resources import base_paths
 
 class ModoInsert:
@@ -83,16 +83,7 @@ class ModoInsert:
         self.getMovimiento(tipo)
         self.getCuenta()
         self.getCategoria(tipo)
-        self.insertarMovimiento(tipo)
-
-
-    # Get sqlitle connection
-    def run_query(self, query, parameters=()):
-        with sqlite3.connect(self.db) as conn:
-            cursor = conn.cursor()
-            result = cursor.execute(query, parameters)
-            conn.commit()
-            return result
+        #self.insertarMovimiento(tipo)
 
     # get sql query
     def getMovimiento(self, tipo):
@@ -102,35 +93,38 @@ class ModoInsert:
         for registro in registrosAntiguos:
             self.tree.delete(registro)
         query = sqls.select_pruebas.format(tipo)
-        movimientos = self.run_query(query)
+
+        movimientos = Services().run_query2(query)
         for movimiento in movimientos:
             self.tree.insert('', 0, text=movimiento[0], values=movimiento[0:])
 
     # show list of cuenta order by historic frequency
 
     def getCuenta(self):
-        query = """SELECT cuenta FROM
-                  (SELECT  cuenta ,count(cuenta) as  freq
-                  FROM facts_table
-                  GROUP BY cuenta
-                  order by count(cuenta) desc) as T1"""
-        elemntos = self.run_query(query)
+        query=sqls.lista_cuentas_ordenadas
+        elemntos=Services().run_query2(query)
         lista = [elemento[0] for elemento in elemntos]
         self.cuenta["values"] = lista
 
     # show list of category order by historic frequency
     def getCategoria(self, tipo):
         query = 'SELECT distinct categoria from facts_table Where tipo="' + tipo + '"'
-        elemntos = self.run_query(query)
+        elemntos = Services().run_query2(query)
         lista = [elemento[0] for elemento in elemntos]
         self.categoria["values"] = lista
 
     # form validation
     def validacion(self):
-        "result =  len(self.fecha.get())!=0 and \
-                  len(self.eur.get())!=0"""
-        # ('.' in self.eur.get())
-        return True
+        lista_a_validar=[self.cuenta.get(),self.fecha.get(),self.categoria.get(),self.eur.get(),self.tipo.get()]
+        for i in lista_a_validar:
+            if Validador(i).val_empty:
+                pass
+            else:
+                return False
+        if Validador(self.eur.get()).val_num:
+            return True
+        else:
+            return False
 
     # insert data form in sqllitle
     def insertarMovimiento(self, tipo):
@@ -146,11 +140,15 @@ class ModoInsert:
                 self.tipo.get(),
                 self.nota.get(),
                 yet2)
-            self.run_query(query, parameters)
+            Services().run_query2(query, parameters)
+            self.getMovimiento(tipo)
+            self.eur.delete(0, 'end')
             self.message['text'] = 'Datos Salvados'
+            self.message.configure(foreground='green')
+
         else:
             self.message['text'] = 'Algo hay mal, mira a ver!'
-        self.getMovimiento(tipo)
+            self.message.configure(foreground='red')
 
     def getLista(self):
         query = """SELECT cuenta FROM
@@ -158,8 +156,7 @@ class ModoInsert:
                   FROM facts_table
                   GROUP BY cuenta
                   order by count(cuenta) desc) as T1"""
-        querGasto = """SELECT distinct categoria from facts_table Where tipo='Gasto'"""
-        elemntos = self.run_query(query)
+        elemntos=Services().run_query2(query)
         lista = [elemento[0] for elemento in elemntos]
         self.cuenta["values"] = lista
 
@@ -175,7 +172,7 @@ class ModoInsert:
         self.message['text'] = ''
         id = self.tree.item(self.tree.selection())['text']
         query = 'DELETE FROM pruebas WHERE id=?'
-        self.run_query(query, (id,))
+        Services().run_query2(query, (id,))
         self.message['text'] = 'yiaaass!!! La armaste'
         self.getMovimiento(tipo)
 
@@ -187,6 +184,7 @@ class ModoInsert:
 
         except IndexError:
             self.message['text'] = 'Selecciona un movimiento simpló!!'
+            self.message.configure(foreground='red')
             return
 
         id = self.tree.item(self.tree.selection())['text']
@@ -296,9 +294,10 @@ class ModoInsert:
         query = 'UPDATE pruebas SET Fecha =?, Cuenta =?,Categoria =?,Subcategoria =?,Descripcion =?,Total =?,' \
                 'TipoMov =?,Notas =?  Where id=?'
         parameters = (newFecha, newCuenta, newCategoria, newSubCategoria, newdescripcion, newEur, newtipo, newNota, id)
-        self.run_query(query, parameters)
+        Services().run_query2(query, parameters)
         self.edit_wind.destroy()
         self.message['text'] = 'El Registro nº{} se ha actualizado'.format(id)
+        self.message.configure(foreground='red')
         self.getMovimiento(tipo)
 
     # close window

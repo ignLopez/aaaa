@@ -80,6 +80,11 @@ class SqlSentence:
     SELECT id , fecha , cuenta , categoria , subcategoria, descripcion, total, tipomov, notas FROM pruebas 
     WHERE tipomov='{0}' ORDER BY insertupdate DESC
     """
+    lista_cuentas_ordenadas="""SELECT cuenta FROM
+                  (SELECT  cuenta ,count(cuenta) as  freq
+                  FROM facts_table
+                  GROUP BY cuenta
+                  order by count(cuenta) desc) as T1"""
 
 class Services:
 
@@ -88,15 +93,40 @@ class Services:
         cnx = sqlite3.connect(db)
         return cnx
 
+    def close_conn(self,cnx):
+        return cnx.commit()
 
+    #Cuando interesa retornar un datos para reporting o para tratarlos
     def get_query(self,query):
         cnx=self.run_query()
         data = pd.read_sql_query(query, cnx)
+        self.close_conn(cnx)
         return data
 
+    # Cuando se va a hacer un insert,update,o getmovimientos
     def run_query2(self, query, parameters=()):
-        with sqlite3.connect(self.db) as conn:
+        db=base_paths.db_file
+        with sqlite3.connect(db) as conn:
             cursor = conn.cursor()
             result = cursor.execute(query, parameters)
             conn.commit()
             return result
+
+
+class Validador():
+    def __init__(self,s):
+       self.val_num = self.is_number(s)
+       self.val_empty=self.isnot_empty(s)
+
+    def is_number(self,s):
+       try:
+           float(s)
+           return True
+       except ValueError:
+           return False
+
+    def isnot_empty(self,s):
+        if s =='':
+            return False
+        else:
+            return True
